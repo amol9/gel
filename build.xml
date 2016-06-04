@@ -1,0 +1,57 @@
+<project name="gel" default="compile" basedir=".">
+
+  <property name="libPath" value="/home/amol/projects/lib/java"/>
+
+  <path id="master-classpath">
+    <fileset dir="${libPath}/commons-codec-1.9">
+      <include name="commons-codec-1.9.jar"/>
+    </fileset>
+    <fileset dir="${libPath}/junit-4.11">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <property name="sourceDir" value="parser"/>
+    <property name="outputDir" value="classes"/>
+  </target>
+
+  <target name="clean" depends="init">
+    <delete dir="${outputDir}"/>
+  </target>
+
+  <target name="prepare" depends="init">
+    <mkdir dir="${outputDir}"/>
+  </target>
+
+  <target name="parser" depends="init">
+    <java classname="org.antlr.v4.Tool">
+      <classpath>
+        <pathelement location="${libPath}/antlr-4.5.3-complete.jar"/>
+      </classpath>
+      <arg value="Gel.g4"/>
+      <arg value="-o"/>
+      <arg value="parser"/>
+    </java>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <javac srcdir="${sourceDir}" destdir="${outputDir}">
+      <classpath refid="master-classpath"/>
+    </javac>
+  </target>
+
+  <target name="run" depends="compile">
+    <java classname="org.antlr.v4.runtime.misc.TestRig" fork="true" spawn="true">
+      <classpath>
+        <pathelement location="${libPath}/antlr-4.5.3-complete.jar"/>
+        <pathelement location="./classes"/>
+      </classpath>
+      <arg value="Gel"/>
+      <arg value="compilationUnit"/>
+      <arg value="-gui"/>
+      <arg value="${file}"/>
+    </java>
+  </target>
+
+</project>
